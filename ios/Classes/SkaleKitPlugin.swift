@@ -56,6 +56,7 @@ public class SkaleKitPlugin: NSObject, FlutterPlugin, SKSkaleDelegate {
         deviceChannel.setStreamHandler(DeviceStreamHandler(plugin: instance))
 
         instance.skale.delegate = instance
+        instance.skale.isAutoConnectEnabled = false
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -116,7 +117,7 @@ public class SkaleKitPlugin: NSObject, FlutterPlugin, SKSkaleDelegate {
             result(nil)
 
         case "getBatteryLevel":
-            skale.readSkaleBatteryLifeWithCompletion { level in
+            skale.readBatteryLife { level in
                 result(Int(level))
             }
 
@@ -170,31 +171,56 @@ public class SkaleKitPlugin: NSObject, FlutterPlugin, SKSkaleDelegate {
     // MARK: - Device Picker
 
     private func showDevicePicker(result: @escaping FlutterResult) {
-        guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
-            result(FlutterError(code: "NO_VIEW_CONTROLLER", message: "Could not find root view controller", details: nil))
-            return
+        // Must run on main thread for UI
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                result(FlutterError(code: "PLUGIN_ERROR", message: "Plugin instance deallocated", details: nil))
+                return
+            }
+
+            guard let topController = self.getTopViewController() else {
+                result(FlutterError(code: "NO_VIEW_CONTROLLER", message: "Could not find root view controller", details: nil))
+                return
+            }
+
+            self.connectionStateEventSink?("SCANNING")
+
+            self.skale.showDevicePicker(onViewContoller: topController) { [weak self] error in
+                if let error = error {
+                    let nsError = error as NSError
+                    let flutterError = self?.mapNSErrorToFlutterError(nsError)
+                    result(flutterError)
+                } else {
+                    // Connection will be handled by delegate methods
+                    // Return nil to indicate picker was shown successfully
+                    result(nil)
+                }
+            }
+        }
+    }
+
+    private func getTopViewController() -> UIViewController? {
+        var rootViewController: UIViewController?
+
+        if #available(iOS 13.0, *) {
+            // iOS 13+ use scene-based approach
+            let scenes = UIApplication.shared.connectedScenes
+            let windowScene = scenes.first as? UIWindowScene
+            rootViewController = windowScene?.windows.first(where: { $0.isKeyWindow })?.rootViewController
+        } else {
+            rootViewController = UIApplication.shared.keyWindow?.rootViewController
+        }
+
+        guard var topController = rootViewController else {
+            return nil
         }
 
         // Find the topmost presented view controller
-        var topController = rootViewController
         while let presented = topController.presentedViewController {
             topController = presented
         }
 
-        connectionStateEventSink?("SCANNING")
-
-        skale.showDevicePicker(onViewContoller: topController) { [weak self] error in
-            if let error = error {
-                let nsError = error as NSError
-                let flutterError = self?.mapNSErrorToFlutterError(nsError)
-                result(flutterError)
-            } else {
-                // Connection will be handled by delegate methods
-                // Return nil to indicate picker was shown successfully
-                // The actual device info will come through the connection delegate
-                result(nil)
-            }
-        }
+        return topController
     }
 
     private func connect(deviceId: String, result: @escaping FlutterResult) {

@@ -28,7 +28,7 @@ Add `skale_kit` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  skale_kit: ^1.0.0
+  skale_kit: ^1.0.3
 ```
 
 ### iOS Setup
@@ -106,6 +106,22 @@ Future<void> requestPermissions() async {
 }
 ```
 
+### Auto-Connect
+
+By default, auto-connect is **disabled**. This means `showDevicePicker()` will display the device selection UI each time.
+
+To enable auto-connect (automatically reconnect to the last connected device):
+
+```dart
+// Enable auto-connect
+await skaleKit.setAutoConnect(true);
+
+// Disable auto-connect (default)
+await skaleKit.setAutoConnect(false);
+```
+
+> **Note**: When auto-connect is enabled, `showDevicePicker()` may not show the device picker UI if a previously connected device is available.
+
 ### Error Handling
 
 The plugin uses typed exceptions for error handling:
@@ -136,7 +152,7 @@ try {
 | `tare()` | Tares (zeros) the scale |
 | `getBatteryLevel()` | Returns battery percentage (0-100) |
 | `setLEDDisplay(bool)` | Controls LED display (iOS only) |
-| `setAutoConnect(bool)` | Enables/disables auto-connect |
+| `setAutoConnect(bool)` | Enables/disables auto-connect (default: false) |
 | `startScan()` | Starts scanning for devices |
 | `stopScan()` | Stops scanning |
 | `isBluetoothEnabled()` | Checks if Bluetooth is enabled |
