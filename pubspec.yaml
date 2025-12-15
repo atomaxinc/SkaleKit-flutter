@@ -1,0 +1,43 @@
+name: skale_kit
+description: Flutter plugin for Skale smart coffee scales. Connect, monitor weight, tare, and receive button events via Bluetooth Low Energy.
+version: 1.0.1
+homepage: https://github.com/atomaxinc/SkaleKit-flutter
+repository: https://github.com/atomaxinc/SkaleKit-flutter
+issue_tracker: https://github.com/atomaxinc/SkaleKit-flutter/issues
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.1.0
+
+dev_dependencies:
+  flutter_lints: ^3.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.atomaxinc.skalekit
+        pluginClass: SkaleKitPlugin
+      ios:
+        pluginClass: SkaleKitPlugin
+
+topics:
+  - bluetooth
+  - ble
+  - coffee
+  - scale
+  - iot
+
+platforms:
+  android:
+  ios:
+
+funding:
+  - https://atomaxinc.com
