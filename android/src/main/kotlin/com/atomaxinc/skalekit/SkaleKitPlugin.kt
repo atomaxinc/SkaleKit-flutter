@@ -1,4 +1,4 @@
-package com.atomaxinc.skalekit.flutter
+package com.atomaxinc.skalekit
 
 import android.app.Activity
 import android.bluetooth.BluetoothDevice
