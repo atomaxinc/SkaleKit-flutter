@@ -7,7 +7,7 @@ group = "com.atomaxinc.skalekit"
 version = "1.0.0"
 
 android {
-    namespace = "com.atomaxinc.skalekit.flutter"
+    namespace = "com.atomaxinc.skalekit"
     compileSdk = 34
 
     defaultConfig {
@@ -30,10 +30,16 @@ android {
     }
 }
 
+repositories {
+    maven {
+        url = uri("${projectDir}/repo")
+    }
+}
+
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
     implementation("androidx.core:core-ktx:1.12.0")
 
-    // SkaleKit AAR - Include from local libs folder
-    implementation(files("libs/skalekit-1.0.0.aar"))
+    // SkaleKit AAR from local Maven repository - use 'api' to expose to consumers
+    api("com.atomaxinc:skalekit:1.0.0")
 }

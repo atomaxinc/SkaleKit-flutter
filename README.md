@@ -28,7 +28,7 @@ Add `skale_kit` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  skale_kit: ^1.0.3
+  skale_kit: ^1.0.5
 ```
 
 ### iOS Setup
@@ -44,7 +44,27 @@ Add the following keys to your `Info.plist`:
 
 ### Android Setup
 
-The plugin automatically adds the required permissions to your `AndroidManifest.xml`. However, you'll need to request permissions at runtime using a package like `permission_handler`.
+The plugin automatically adds the required permissions to your `AndroidManifest.xml`. However, you'll need to:
+
+1. **Add the SkaleKit native SDK repository** to your app's `android/build.gradle`:
+
+```groovy
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        // Add this for SkaleKit native SDK
+        maven {
+            def flutterProjectRoot = rootProject.projectDir.parent
+            url "$flutterProjectRoot/.pub-cache/hosted/pub.dev/skale_kit-1.0.5/android/repo"
+        }
+    }
+}
+```
+
+> **Note**: For path dependencies during development, use the path to your local plugin's repo folder instead.
+
+2. **Request permissions at runtime** using a package like `permission_handler`.
 
 ## Usage
 
