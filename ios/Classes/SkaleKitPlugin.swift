@@ -116,7 +116,7 @@ public class SkaleKitPlugin: NSObject, FlutterPlugin, SKSkaleDelegate {
             result(nil)
 
         case "getBatteryLevel":
-            skale.readSkaleBatteryLife { level in
+            skale.readSkaleBatteryLifeWithCompletion { level in
                 result(Int(level))
             }
 
